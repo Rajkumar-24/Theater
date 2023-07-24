@@ -14,6 +14,7 @@ import MovieCard from "../components/MovieCard";
 import Header from "../components/Header";
 import {
   BottomModal,
+  ModalContent,
   ModalFooter,
   ModalTitle,
   SlideAnimation,
@@ -22,9 +23,6 @@ import { Feather } from "@expo/vector-icons";
 
 const HomeScreen = () => {
   const navigation = useNavigation();
-  const moveAnimation = new Animated.Value(0);
-  const { selectedCity, setSelectedCity } = useContext(Place);
-  const [modalVisible, setModalVisible] = useState(false);
   const data = [
     {
       adult: false,
@@ -359,6 +357,11 @@ const HomeScreen = () => {
       vote_count: 1,
     },
   ];
+  const moveAnimation = new Animated.Value(0);
+  const { selectedCity, setSelectedCity } = useContext(Place);
+  const [modalVisible, setModalVisible] = useState(false);
+  const [selectedFilter, setSelectedFilter] = useState();
+  const [sortedData, setSortedData] = useState(data);
 
   useEffect(() => {
     Animated.loop(
@@ -403,13 +406,101 @@ const HomeScreen = () => {
       ),
     });
   }, []);
+  const languages = [
+    {
+      id: "0",
+      language: "English",
+    },
+    {
+      id: "10",
+      language: "Kannada",
+    },
+    {
+      id: "1",
+      language: "Telugu",
+    },
+    {
+      id: "2",
+      language: "Hindi",
+    },
+    {
+      id: "3",
+      language: "Tamil",
+    },
+    {
+      id: "5",
+      language: "Malayalam",
+    },
+  ];
+
+  const genres = [
+    {
+      id: "0",
+      language: "Horror",
+    },
+    {
+      id: "1",
+      language: "Comedy",
+    },
+    {
+      id: "2",
+      language: "Action",
+    },
+    {
+      id: "3",
+      language: "Romance",
+    },
+    {
+      id: "5",
+      language: "Thriller",
+    },
+    {
+      id: "6",
+      language: "Drama",
+    },
+  ];
+  const applyFilter = (filter) => {
+    setModalVisible(false);
+    switch (filter) {
+      case "English":
+        setSortedData(
+          sortedData.filter((item) => item.original_language === selectedFilter)
+        );
+        break;
+      case "Kannada":
+        setSortedData(
+          sortedData.filter((item) => item.original_language === selectedFilter)
+        );
+        break;
+      case "Telugu":
+        setSortedData(
+          sortedData.filter((item) => item.original_language === selectedFilter)
+        );
+        break;
+      case "Tamil":
+        setSortedData(
+          sortedData.filter((item) => item.original_language === selectedFilter)
+        );
+        break;
+      case "Malayalam":
+        setSortedData(
+          sortedData.filter((item) => item.original_language === selectedFilter)
+        );
+        break;
+      case "Hindi":
+        setSortedData(
+          sortedData.filter((item) => item.original_language === selectedFilter)
+        );
+        break;
+    }
+  };
   return (
     <View>
       <FlatList
         numColumns={2}
         columnWrapperStyle={{ justifyContent: "space-between" }}
         ListHeaderComponent={Header}
-        data={data}
+        data={sortedData}
         renderItem={({ item, index }) => <MovieCard item={item} key={index} />}
       />
       <Pressable
@@ -433,8 +524,9 @@ const HomeScreen = () => {
         swipeDirection={["up", "down"]}
         swipeThreshold={200}
         footer={
-          <ModalFooter>
+          <ModalFooter style={{ backgroundColor: "#ffc40c" }}>
             <Pressable
+              onPress={() => applyFilter(selectedFilter)}
               style={{
                 paddingRight: 10,
                 marginLeft: "auto",
@@ -443,7 +535,11 @@ const HomeScreen = () => {
                 marginBottom: 30,
               }}
             >
-              <Text>Apple</Text>
+              <Text
+                style={{ fontSize: 16, fontWeight: "bold", letterSpacing: 0.5 }}
+              >
+                Apply
+              </Text>
             </Pressable>
           </ModalFooter>
         }
@@ -452,7 +548,95 @@ const HomeScreen = () => {
         visible={modalVisible}
         onHardwareBackPress={() => setModalVisible(!modalVisible)}
         onTouchOutside={() => setModalVisible(!modalVisible)}
-      ></BottomModal>
+      >
+        <ModalContent style={{ width: "100%", height: 270 }}>
+          <Text
+            style={{
+              paddingVertical: 5,
+              fontWeight: "500",
+              marginTop: 10,
+              fontSize: 15,
+            }}
+          >
+            Language
+          </Text>
+          <Pressable
+            style={{
+              flexDirection: "row",
+              alignItems: "center",
+              flexWrap: "wrap",
+            }}
+          >
+            {languages.map((item, index) =>
+              selectedFilter === item.language ? (
+                <Pressable
+                  onPress={() => setSelectedFilter(item.language)}
+                  style={{
+                    margin: 10,
+                    borderColor: "#c8c8c8c8",
+                    borderWidth: 2,
+                    paddingVertical: 5,
+                    paddingHorizontal: 5,
+                    borderRadius: 25,
+                    backgroundColor: "orange",
+                    borderColor: "white",
+                  }}
+                >
+                  <Text style={{ color: "white", fontWeight: "500" }}>
+                    {item.language}
+                  </Text>
+                </Pressable>
+              ) : (
+                <Pressable
+                  onPress={() => setSelectedFilter(item.language)}
+                  style={{
+                    margin: 10,
+                    borderColor: "#c8c8c8c8",
+                    borderWidth: 1,
+                    paddingVertical: 5,
+                    paddingHorizontal: 5,
+                    borderRadius: 25,
+                  }}
+                >
+                  <Text>{item.language}</Text>
+                </Pressable>
+              )
+            )}
+          </Pressable>
+          <Text
+            style={{
+              paddingVertical: 5,
+              fontWeight: "500",
+              marginTop: 10,
+              fontSize: 15,
+            }}
+          >
+            Geners
+          </Text>
+          <Pressable
+            style={{
+              flexDirection: "row",
+              alignItems: "center",
+              flexWrap: "wrap",
+            }}
+          >
+            {genres.map((item, index) => (
+              <Pressable
+                style={{
+                  margin: 10,
+                  borderColor: "#c8c8c8c8",
+                  borderWidth: 1,
+                  paddingVertical: 5,
+                  paddingHorizontal: 5,
+                  borderRadius: 25,
+                }}
+              >
+                <Text>{item.language}</Text>
+              </Pressable>
+            ))}
+          </Pressable>
+        </ModalContent>
+      </BottomModal>
     </View>
   );
 };

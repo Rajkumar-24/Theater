@@ -8,11 +8,14 @@ import {
   View,
 } from "react-native";
 import React from "react";
+import { useNavigation } from "@react-navigation/native";
 
 const MovieCard = ({ item }) => {
+  const navigation = useNavigation();
   return (
     <SafeAreaView>
       <Pressable
+        onPress={() => navigation.navigate("Movie", { title: item.title })}
         style={{
           flex: 1,
           borderRadius: 5,
@@ -57,7 +60,9 @@ const MovieCard = ({ item }) => {
             marginRight: 10,
             width: 70,
             alignSelf: "flex-end",
+            alignItems: "center",
             marginTop: 3,
+            justifyContent: "center",
           }}
         >
           <Text style={{ color: "black", fontSize: 15, fontWeight: "500" }}>
