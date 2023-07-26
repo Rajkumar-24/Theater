@@ -371,7 +371,7 @@ const HomeScreen = () => {
         useNativeDriver: true,
       })
     ).start();
-  }, []);
+  }, [selectedCity]);
   useLayoutEffect(() => {
     navigation.setOptions({
       headerLeft: () => <Text>Hello Raj Kumar Singh</Text>,
@@ -405,7 +405,7 @@ const HomeScreen = () => {
         </Pressable>
       ),
     });
-  }, []);
+  }, [selectedCity]);
   const languages = [
     {
       id: "0",
