@@ -14,7 +14,7 @@ const Date = ({ date, selected, onSelectedDate }) => {
       style={[
         styles.container,
         selected === fullDate && {
-          backgroundColor: "#FFBF00",
+          backgroundColor: "#efae28",
         },
       ]}
     >
@@ -49,9 +49,9 @@ export default Date;
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: "#e0e0e0e0",
-    borderRadius: 20,
-    borderColor: "#dddddd",
+    backgroundColor: "#36454F",
+    borderRadius: 15,
+    borderColor: "#fff",
     padding: 10,
     width: 70,
     height: 70,
@@ -65,9 +65,11 @@ const styles = StyleSheet.create({
     fontSize: 15,
     fontWeight: "500",
     letterSpacing: 1,
+    color: "#fff",
   },
   number: {
     fontSize: 14,
     fontWeight: "500",
+    color: "#fff",
   },
 });

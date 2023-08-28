@@ -20,8 +20,13 @@ import {
   SlideAnimation,
 } from "react-native-modals";
 import { Feather } from "@expo/vector-icons";
-
+import "url-search-params-polyfill";
+import { URL } from "react-native-url-polyfill";
+import { client } from "../theatre/sanity";
 const HomeScreen = () => {
+  global.URL = URL;
+  const params = new URLSearchParams();
+  params.set("foo", "bar");
   const navigation = useNavigation();
   const data = [
     {
@@ -361,7 +366,18 @@ const HomeScreen = () => {
   const { selectedCity, setSelectedCity } = useContext(Place);
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedFilter, setSelectedFilter] = useState();
-  const [sortedData, setSortedData] = useState(data);
+  const [sortedData, setSortedData] = useState([]);
+  const [moviesData, setMoviesData] = useState([]);
+  useEffect(() => {
+    const fetchData = async () => {
+      const result = await client.fetch(`
+      *[_type == "movie"]
+      `);
+      setMoviesData(result);
+      setSortedData(result);
+    };
+    fetchData();
+  }, []);
 
   useEffect(() => {
     Animated.loop(
@@ -374,9 +390,9 @@ const HomeScreen = () => {
   }, [selectedCity]);
   useLayoutEffect(() => {
     navigation.setOptions({
-      headerLeft: () => <Text>Hello Raj Kumar Singh</Text>,
+      headerLeft: () => <Text style={{ color: "#ebe6bf" }}>Hello, User</Text>,
       headerStyle: {
-        backgroundColor: "#f5f5f5f5",
+        backgroundColor: "#0a0b0f",
         shadowColor: "transparent",
         shadowOpacity: 0.3,
         shadowOffest: { width: -1, height: 1 },
@@ -384,12 +400,12 @@ const HomeScreen = () => {
       },
       headerRight: () => (
         <Pressable style={{ flexDirection: "row", gap: 10 }}>
-          <Ionicons name="notifications" size={24} color="black" />
+          <Ionicons name="notifications" size={24} color="#ebe6bf" />
           <Entypo
             onPress={() => navigation.navigate("Places")}
             name="location-pin"
             size={24}
-            color="black"
+            color="#ebe6bf"
           />
           <Pressable style={{ marginLeft: 5 }}>
             <Animated.Text
@@ -399,7 +415,7 @@ const HomeScreen = () => {
                 { transform: [{ translateX: moveAnimation }] },
               ]}
             >
-              <Text>{selectedCity}</Text>
+              <Text style={{ color: "#ebe6bf" }}>{selectedCity}</Text>
             </Animated.Text>
           </Pressable>
         </Pressable>
@@ -494,9 +510,11 @@ const HomeScreen = () => {
         break;
     }
   };
+  console.log(moviesData);
   return (
-    <View>
+    <View style={{ backgroundColor: "#0a0b0f" }}>
       <FlatList
+        style={{}}
         numColumns={2}
         columnWrapperStyle={{ justifyContent: "space-between" }}
         ListHeaderComponent={Header}
@@ -508,7 +526,7 @@ const HomeScreen = () => {
         style={{
           position: "absolute",
           bottom: 30,
-          backgroundColor: "#ffc40c",
+          backgroundColor: "#efae28",
           width: 55,
           height: 55,
           borderRadius: 25.25,
@@ -517,14 +535,15 @@ const HomeScreen = () => {
           alignItems: "center",
         }}
       >
-        <Feather name="filter" size={24} color="black" />
+        <Feather name="filter" size={24} color="#0a0b0f" />
       </Pressable>
       <BottomModal
         onBackdropPress={() => setModalVisible(!modalVisible)}
         swipeDirection={["up", "down"]}
         swipeThreshold={200}
+        overlayBackgroundColor="gray"
         footer={
-          <ModalFooter style={{ backgroundColor: "#ffc40c" }}>
+          <ModalFooter style={{ backgroundColor: "#efae28" }}>
             <Pressable
               onPress={() => applyFilter(selectedFilter)}
               style={{
@@ -543,13 +562,21 @@ const HomeScreen = () => {
             </Pressable>
           </ModalFooter>
         }
-        modalTitle={<ModalTitle title="filters" />}
+        modalTitle={
+          <ModalTitle
+            title="filters"
+            titleTextStyle={{ backgroundColor: "blue" }}
+          />
+        }
         modalAnimation={new SlideAnimation({ slideFrom: "bottom" })}
         visible={modalVisible}
         onHardwareBackPress={() => setModalVisible(!modalVisible)}
         onTouchOutside={() => setModalVisible(!modalVisible)}
+        modalStyle={{ backgroundColor: "#a65454" }}
       >
-        <ModalContent style={{ width: "100%", height: 270 }}>
+        <ModalContent
+          style={{ width: "100%", height: 270, backgroundColor: "pink" }}
+        >
           <Text
             style={{
               paddingVertical: 5,

@@ -7,15 +7,61 @@ import {
   Text,
   View,
 } from "react-native";
-import React from "react";
+import React, { useState } from "react";
 import { useNavigation } from "@react-navigation/native";
+import axios from "axios";
 
 const MovieCard = ({ item }) => {
+  const [trailerUrl, setTrailerUrl] = useState("");
   const navigation = useNavigation();
+  const movieTitle = item.title.substr(0, 20);
+  console.log(item);
+  const fetchtrailerdata = async () => {
+    try {
+      const API_KEY = "AIzaSyCmE8OH70SJc-m5xrvh3fCmqb8DufgQJ00";
+      const response = await axios.get(
+        `https://www.googleapis.com/youtube/v3/search`,
+        {
+          params: {
+            part: "snippet",
+            q: `${movieTitle} trailer`,
+            type: "video",
+            key: API_KEY,
+          },
+        }
+      );
+
+      if (response.data.items && response.data.items.length > 0) {
+        const videoId = response.data.items[0].id.videoId;
+
+        console.log(videoId);
+        setTrailerUrl(videoId);
+      } else {
+        setTrailerUrl("No trailer found");
+      }
+    } catch (error) {
+      console.log("Error fetching movie trailer:", error);
+    }
+    navigation.navigate("MovieD", {
+      title: item.title,
+      movieId: item._id,
+      language: item.original_language,
+      videoId: trailerUrl,
+      overview: item.overview,
+      posterPath: item.poster_path,
+    });
+  };
   return (
     <SafeAreaView>
       <Pressable
-        onPress={() => navigation.navigate("Movie", { title: item.title })}
+        onPress={
+          fetchtrailerdata
+          // () =>
+          // navigation.navigate("MovieD", {
+          //   title: item.title,
+          //   movieId: item._id,
+          // })
+        }
         style={{
           flex: 1,
           borderRadius: 5,
@@ -38,7 +84,14 @@ const MovieCard = ({ item }) => {
           }}
         />
         <View>
-          <Text style={{ marginTop: 6, fontSize: 15, fontWeight: "400" }}>
+          <Text
+            style={{
+              marginTop: 6,
+              fontSize: 15,
+              fontWeight: "400",
+              color: "#ebe6bf",
+            }}
+          >
             {item.title.substr(0, 20)}
           </Text>
           <Text
@@ -46,13 +99,14 @@ const MovieCard = ({ item }) => {
               marginTop: 4,
               fontSize: 15,
               fontWeight: "400",
-              color: "gray",
+              color: "#f0c74b",
             }}
           >
             U/A - {item.original_language}
           </Text>
         </View>
         <Pressable
+          onPress={fetchtrailerdata}
           style={{
             backgroundColor: "#ffc40c",
             padding: 10,

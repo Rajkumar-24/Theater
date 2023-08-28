@@ -9,10 +9,17 @@ import {
   Image,
   ImageBackground,
 } from "react-native";
-import React, { useCallback, useContext, useLayoutEffect } from "react";
+import React, {
+  useCallback,
+  useContext,
+  useEffect,
+  useLayoutEffect,
+  useState,
+} from "react";
 import { useNavigation } from "@react-navigation/native";
 import { Ionicons, Entypo } from "@expo/vector-icons";
 import { Place } from "../PlaceContext";
+import { client } from "../theatre/sanity";
 
 const PlacesScreen = () => {
   const navigation = useNavigation();
@@ -20,31 +27,44 @@ const PlacesScreen = () => {
   useLayoutEffect(() => {
     navigation.setOptions({
       headerTitle: "",
+      headerStyle: {
+        backgroundColor: "#0a0b0f",
+      },
+
       headerLeft: () => (
         <Pressable
-          style={{ flexDirection: "row", alignItems: "center", gap: 4 }}
+          style={{
+            flexDirection: "row",
+            alignItems: "center",
+            gap: 4,
+          }}
         >
           <Ionicons
             onPress={() => navigation.goBack()}
             name="chevron-back"
             size={24}
-            color="blue"
+            color="#f7710b"
           />
-          <Text style={{ fontSize: 15, letterSpacing: 1 }}>
+          <Text style={{ fontSize: 15, letterSpacing: 1, color: "#fff" }}>
             CHANGE LOCATION
           </Text>
         </Pressable>
       ),
-      //   headerStyle: {
-      //     backgroundColor: "#f5f5f5f5",
-      //     shadowColor: "transparent",
-      //     shadowOpacity: 0.3,
-      //     shadowOffest: { width: -1, height: 1 },
-      //     shadowRadius: 3,
-      //   },
     });
   }, []);
-  const { selectedCity, setSelectedCity } = useContext(Place);
+  const [cities, setCities] = useState([]);
+  const { selectedCity, setSelectedCity, locationId, setLocationId } =
+    useContext(Place);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const result = await client.fetch(`
+      *[_type == "location"]
+      `);
+      setCities(result);
+    };
+    fetchData();
+  }, []);
   const places = [
     {
       id: "0",
@@ -95,14 +115,16 @@ const PlacesScreen = () => {
         "https://images.pexels.com/photos/15351642/pexels-photo-15351642.jpeg?auto=compress&cs=tinysrgb&w=800",
     },
   ];
-  const selectCity = (city) => {
+  const selectCity = (city, locationId) => {
     setSelectedCity(city);
+    setLocationId(locationId);
     setTimeout(() => {
       navigation.navigate("HomeScreen");
     }, 800);
   };
+  console.log(cities);
   return (
-    <View>
+    <View style={{ backgroundColor: "#0a0b0f", flex: 1 }}>
       <View
         style={{
           margin: 10,
@@ -113,10 +135,14 @@ const PlacesScreen = () => {
           borderColor: "#e0e0e0e0",
           borderWidth: 2,
           borderRadius: 30,
+          backgroundColor: "#222222",
         }}
       >
-        <TextInput placeholder="Search Your City" />
-        <Ionicons name="search-outline" size={24} color="black" />
+        <TextInput
+          placeholder="Search Your City"
+          placeholderTextColor="#ffffff"
+        />
+        <Ionicons name="search-outline" size={24} color="#ffffff" />
       </View>
       <View
         style={{
@@ -126,24 +152,30 @@ const PlacesScreen = () => {
           justifyContent: "space-between",
         }}
       >
-        <Text>Selected Location</Text>
-        <Text>{selectedCity}</Text>
+        <Text style={{ color: "#fff" }}>Selected Location</Text>
+        <Text style={{ color: "#fff" }}>{selectedCity}</Text>
       </View>
       <FlatList
         numColumns={2}
         columnWrapperStyle={{ justifyContent: "space-between" }}
-        data={places}
+        data={cities}
         renderItem={({ item, index }) => (
           <Pressable
-            onPress={() => selectCity(item.place)}
-            style={{ marginVertical: 10, marginHorizontal: 20 }}
+            onPress={() => selectCity(item.city, item._id)}
+            style={{
+              marginVertical: 10,
+              marginHorizontal: 20,
+              borderColor: "#fff",
+              borderWidth: 1,
+              borderRadius: 10,
+            }}
           >
             <ImageBackground
               imageStyle={{ borderRadius: 8 }}
               style={{ width: 160, height: 100, opacity: 0.8 }}
               source={{ uri: item.image }}
             >
-              {selectedCity == item.place && (
+              {selectedCity == item.city && (
                 <View
                   style={{
                     flex: 1,
@@ -173,7 +205,7 @@ const PlacesScreen = () => {
                 <Text
                   style={{ color: "white", fontWeight: "bold", fontSize: 16 }}
                 >
-                  {item.place}
+                  {item.city}
                 </Text>
               </View>
             </ImageBackground>

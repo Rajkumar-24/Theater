@@ -9,17 +9,18 @@ import React from "react";
 
 const Header = () => {
   return (
-    <View style={{ marginBottom: 55 }}>
+    <View style={{ marginBottom: 55, backgroundColor: "#564533" }}>
       <ImageBackground
-        style={{ height: 200, resizeMode: "contain" }}
-        source={{
-          uri: "https://www.koimoi.com/wp-content/new-galleries/2022/07/oppenheimer-first-poster-highlights-devastation-caused-by-atomic-bomb-0001.jpg",
+        style={{
+          height: 200,
+          resizeMode: "contain",
         }}
+        source={require("../assets/imgg.jpg")}
       >
         <Pressable
           style={{
             height: 90,
-            backgroundColor: "white",
+            backgroundColor: "#0a0b0f",
             padding: 10,
             borderRadius: 10,
             width: "90%",
@@ -33,13 +34,14 @@ const Header = () => {
               flexDirection: "row",
               alignItems: "center",
               justifyContent: "space-between",
+              backgroundColor: "#0a0b0f",
             }}
           >
-            <View style={{}}>
+            <View style={{ backgroundColor: "#0a0b0f" }}>
               <Text
                 style={{
                   fontSize: 18,
-                  color: "black",
+                  color: "#ebe6bf",
                   fontWeight: "500",
                   alignItems: "center",
                   marginLeft: "50%",
@@ -48,17 +50,29 @@ const Header = () => {
                 New Release{" "}
               </Text>
               <Text
-                style={{ marginVertical: 5, fontSize: 16, fontWeight: "700" }}
+                style={{
+                  marginVertical: 5,
+                  fontSize: 16,
+                  fontWeight: "700",
+                  color: "#ebe6bf",
+                }}
               >
                 Oppenheimer
               </Text>
-              <Text style={{ fontSize: 16, color: "gray", fontWeight: "500" }}>
+              <Text
+                style={{
+                  fontSize: 16,
+                  color: "gray",
+                  fontWeight: "500",
+                  color: "#ebe6bf",
+                }}
+              >
                 U.A * English
               </Text>
             </View>
             <Pressable
               style={{
-                backgroundColor: "#ffc40c",
+                backgroundColor: "#efae28",
                 padding: 10,
                 borderRadius: 5,
                 marginRight: 10,

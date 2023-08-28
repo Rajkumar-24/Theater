@@ -11,26 +11,29 @@ import { useNavigation, useRoute } from "@react-navigation/native";
 import Calender from "../components/Calender";
 import moment from "moment";
 import { Place } from "../PlaceContext";
+import { client } from "../theatre/sanity";
 
 const MovieScreen = ({ title }) => {
   const navigation = useNavigation();
-  const { selectedCity, setSelectedCity } = useContext(Place);
-
+  const { selectedCity, setSelectedCity, locationId, setLocationId } =
+    useContext(Place);
   const route = useRoute();
   const movieTitle = route.params.title;
   const today = moment().format("YYY-MM-DD");
   const [selectedDate, setSelectedDate] = useState(today);
   const [mall, setMall] = useState([]);
+
   useLayoutEffect(() => {
     navigation.setOptions({
       headerTitle: route.params.title,
       headerStyle: {
-        backgroundColor: "#f5f5f5f5",
+        backgroundColor: "#0a0b0f",
         shadowColor: "transparent",
         shadowOpacity: 0.3,
         shadowOffest: { width: -1, height: 1 },
         shadowRadius: 3,
       },
+      headerTintColor: "#fff",
     });
   }, []);
   const malls = [
@@ -698,63 +701,92 @@ const MovieScreen = ({ title }) => {
       ],
     },
   ];
-  console.log(movieTitle);
+  const [reqData, setReqData] = useState([]);
+
+  useEffect(() => {
+    const fetchTheatres = async () => {
+      const response = await client.fetch(
+        `*[_type == "theatre" && location._ref == "${locationId}"]{
+          ...,
+          "showtimes": *[_type == 'showtimes' && references(^._id) && references('movie', "${route.params.movieId}")]{
+            _id,
+            time,
+            row,
+            "theatre": theatre->name,
+            "movie": movie->name,
+          }
+        }`
+      );
+      setReqData(response);
+    };
+    fetchTheatres();
+  }, []);
+
+  console.log(reqData);
   return (
-    <View>
-      <ScrollView contentContainerStyle={{ marginLeft: 10 }}>
+    <View style={{ backgroundColor: "#0a0b0f" }}>
+      <ScrollView
+        contentContainerStyle={{ marginLeft: 10, backgroundColor: "#0a0b0f" }}
+      >
         <Calender selected={selectedDate} onSelectedDate={setSelectedDate} />
       </ScrollView>
-      {malls
-        .filter((item) => item.place == selectedCity)
-        .map((item) =>
-          item.galleria.map((multiplex, index) => (
-            <Pressable
-              onPress={() => setMall(multiplex.name)}
-              style={{ marginHorizontal: 20, marginVertical: 10 }}
-            >
-              <Text style={{ fontSize: 15, fontWeight: "500" }}>
-                {multiplex.name}
-              </Text>
-              {mall.includes(multiplex.name) ? (
-                <FlatList
-                  numColumns={3}
-                  data={multiplex.showtimes}
-                  renderItem={({ item }) => (
-                    <Pressable
-                      onPress={() =>
-                        navigation.navigate("Theatre", {
-                          name: movieTitle,
-                          selectedDate: selectedDate,
-                          mall: mall,
-                          showtimes: item,
-                        })
-                      }
-                      style={{
-                        borderColor: "green",
-                        borderWidth: 0.7,
-                        padding: 5,
-                        width: 70,
-                        borderRadius: 3,
-                        margin: 8,
-                      }}
-                    >
-                      <Text
-                        style={{
-                          textAlign: "center",
-                          color: "green",
-                          fontSize: 15,
-                          fontWeight: "500",
-                        }}
-                      >
-                        {item}
-                      </Text>
-                    </Pressable>
-                  )}
-                />
-              ) : null}
-            </Pressable>
-          ))
-        )}
+      {reqData.map((item, index) => (
+        <Pressable
+          key={index}
+          onPress={() => setMall(item.name)}
+          style={{
+            marginHorizontal: 20,
+            marginVertical: 10,
+            backgroundColor: "#0a0b0f",
+          }}
+        >
+          <Text style={{ fontSize: 15, fontWeight: "500", color: "#fff" }}>
+            {item.name}
+          </Text>
+
+          {mall.includes(item.name) ? (
+            <FlatList
+              style={{ backgroundColor: "#0a0b0f" }}
+              numColumns={3}
+              data={item.showtimes}
+              renderItem={({ item, index }) => (
+                <Pressable
+                  onPress={() =>
+                    navigation.navigate("Theatre", {
+                      showtime: item.time,
+                      mall: mall,
+                      data: selectedDate,
+                      name: route.params.title,
+                      row: item.row,
+                      docId: item._id,
+                      showtimeId: index,
+                    })
+                  }
+                  style={{
+                    borderColor: "#efae28",
+                    borderWidth: 0.7,
+                    padding: 5,
+                    width: 70,
+                    borderRadius: 3,
+                    margin: 8,
+                  }}
+                >
+                  <Text
+                    style={{
+                      textAlign: "center",
+                      color: "#efae28",
+                      fontSize: 15,
+                      fontWeight: "500",
+                    }}
+                  >
+                    {item.time}
+                  </Text>
+                </Pressable>
+              )}
+            />
+          ) : null}
+        </Pressable>
+      ))}
     </View>
   );
 };

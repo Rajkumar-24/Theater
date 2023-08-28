@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "Theater",
-    "slug": "Theater",
+    "slug": "theater",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -21,10 +21,17 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.host.exponent"
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "extra": {
+      "eas": {
+        "projectId": "e0a9d30b-cacd-4d40-937c-345be162e135"
+      }
+    },
+    "owner": "rajkumar24"
   }
 }

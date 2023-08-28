@@ -61,6 +61,7 @@ const TheatreScreen = () => {
       ],
     },
   ]);
+  // console.log(route.params);
   useLayoutEffect(() => {
     navigation.setOptions({
       headerLeft: () => (
@@ -71,13 +72,13 @@ const TheatreScreen = () => {
             onPress={() => navigation.goBack()}
             name="chevron-back"
             size={24}
-            color="blue"
+            color="#f7710b"
           />
           <View style={{ justifyContent: "center", alignSelf: "center" }}>
-            <Text style={{ fontWeight: "600", fontSize: 16 }}>
+            <Text style={{ fontWeight: "600", fontSize: 16, color: "#fff" }}>
               {route.params.mall}
             </Text>
-            <Text style={{ fontSize: 15, marginLeft: 15 }}>
+            <Text style={{ fontSize: 15, marginLeft: 15, color: "#fff" }}>
               {route.params.name}
             </Text>
           </View>
@@ -85,7 +86,7 @@ const TheatreScreen = () => {
       ),
       headerTitle: "",
       headerStyle: {
-        backgroundColor: "#f5f5f5f5",
+        backgroundColor: "#0a0b0f",
         shadowColor: "transparent",
         shadowOpacity: 0.3,
         shadowOffest: { width: -1, height: 1 },
@@ -94,8 +95,10 @@ const TheatreScreen = () => {
     });
   }, []);
 
+  const seatNumbers = selectedSeats.map((seat) => seat.row + seat.seat);
+  const result = seatNumbers.join(" ");
   const renderSeats = () => {
-    return rows.map((row, rowIndex) => {
+    return route.params.row.map((row, rowIndex) => {
       return (
         <View
           style={{
@@ -106,7 +109,14 @@ const TheatreScreen = () => {
           key={rowIndex}
         >
           <View style={{ width: 30, marginRight: 10 }}>
-            <Text style={{ fontSize: 16, fontWeight: "bold", marginLeft: 15 }}>
+            <Text
+              style={{
+                fontSize: 16,
+                fontWeight: "bold",
+                marginLeft: 15,
+                color: "#fff",
+              }}
+            >
               {row.row}
             </Text>
           </View>
@@ -114,19 +124,19 @@ const TheatreScreen = () => {
             <View style={{ flexDirection: "row", alignItems: "center" }}>
               {row.seats.map((seat, seatIndex) => (
                 <Pressable
-                  onPress={() => handleSeatPress(row.row, seat.seat)}
+                  onPress={() => handleSeatPress(row.row, seat.number)}
                   style={[
                     styles.seat,
                     selectedSeats.some(
                       (selectedSeats) =>
                         selectedSeats.row === row.row &&
-                        selectedSeats.seat === seat.seat
+                        selectedSeats.seat === seat.number
                     ) && styles.selectedSeat,
                     seat.bookingStatus === "disabled" && styles.bookedSeat,
                   ]}
                   disabled={seat.bookingStatus === "disabled"}
                 >
-                  <Text>{seat.seat}</Text>
+                  <Text>{seat.number}</Text>
                 </Pressable>
               ))}
             </View>
@@ -153,122 +163,169 @@ const TheatreScreen = () => {
   };
   console.log(selectedSeats);
   const pay = () => {
-    const updatedRows = [...rows];
-    selectedSeats.forEach((seat) => {
-      const rowIndex = updatedRows.findIndex((row) => row.row === seat.row);
-      const seatIndex = updatedRows[rowIndex].seats.findIndex(
-        (s) => s.seat === seat.seat
-      );
+    // const updatedRows = [...rows];
+    // selectedSeats.forEach((seat) => {
+    //   const rowIndex = updatedRows.findIndex((row) => row.row === seat.row);
+    //   const seatIndex = updatedRows[rowIndex].seats.findIndex(
+    //     (s) => s.seat === seat.seat
+    //   );
 
-      updatedRows[rowIndex].seats[seatIndex].bookingStatus = "disabled";
+    //   updatedRows[rowIndex].seats[seatIndex].bookingStatus = "disabled";
+    // });
+    // setRows(updatedRows);
+    // setSelectedSeats([]);
+    navigation.navigate("Food", {
+      mall: route.params.mall,
+      showtime: route.params.showtime,
+      name: route.params.name,
+      selectedDate: route.params.selectedDate,
+      seats: result,
+      rows: route.params.rows,
+      selectedSeats: selectedSeats,
+      docId: route.params.docId,
     });
-    setRows(updatedRows);
-    setSelectedSeats([]);
   };
   return (
-    <View style={{ flex: 1, backgroundColor: "white" }}>
-      <View style={{ borderBottomWidth: 9, borderBottomColor: "#007FFF" }}>
-        <Text style={{ marginTop: 10, textAlign: "center", fontSize: 15 }}>
-          {" "}
-          SCREEN THIS WAY{" "}
-        </Text>
-      </View>
+    <>
+      <ScrollView style={{ flex: 1, backgroundColor: "#0a0b0f" }}>
+        <View style={{ borderBottomWidth: 9, borderBottomColor: "#24628b" }}>
+          <Text
+            style={{
+              marginTop: 10,
+              textAlign: "center",
+              fontSize: 15,
+              color: "#fff",
+            }}
+          >
+            {" "}
+            SCREEN THIS WAY{" "}
+          </Text>
+        </View>
 
-      <Text
-        style={{
-          marginTop: 10,
-          textAlign: "center",
-          fontSize: 15,
-          color: "gray",
-          marginBottom: 20,
-        }}
-      >
-        {" "}
-        CLASSIC (240){" "}
-      </Text>
-      {renderSeats()}
-      <View
-        style={{
-          padding: 10,
-          marginTop: 25,
-          flexDirection: "row",
-          justifyContent: "center",
-
-          gap: 20,
-        }}
-      >
-        <View
+        <Text
           style={{
-            flexDirection: "column",
-            justifyContent: "center",
-            alignItems: "center",
+            marginTop: 10,
+            textAlign: "center",
+            fontSize: 15,
+            color: "#fff",
+            marginBottom: 20,
           }}
         >
-          <FontAwesome
-            style={{ textAlign: "center", marginBottom: 4 }}
-            name="square"
-            size={24}
-            color="#ffc40c"
-          />
-
-          <Text>Selected</Text>
-        </View>
+          {" "}
+          CLASSIC (240){" "}
+        </Text>
+        {renderSeats()}
         <View
           style={{
-            flexDirection: "column",
+            padding: 10,
+            marginTop: 25,
+            flexDirection: "row",
             justifyContent: "center",
-            alignItems: "center",
+
+            gap: 20,
           }}
         >
           <View
             style={{
-              borderWidth: 1,
-              borderRadius: 5,
-              marginBottom: 7,
-              padding: 10,
-              alignContent: "center",
+              flexDirection: "column",
               justifyContent: "center",
+              alignItems: "center",
             }}
           >
-            {/* <FontAwesome
+            <FontAwesome
               style={{ textAlign: "center", marginBottom: 4 }}
               name="square"
               size={24}
-              color="white"
-            /> */}
+              color="#ffc40c"
+            />
+
+            <Text style={{ color: "#ebe6bf" }}>Selected</Text>
           </View>
-          <Text>Vacant</Text>
+          <View
+            style={{
+              flexDirection: "column",
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            <View
+            // style={{
+            //   borderWidth: 1,
+            //   borderRadius: 5,
+            //   marginBottom: 7,
+            //   padding: 10,
+            //   alignContent: "center",
+            //   justifyContent: "center",
+            //   borderColor: "#fff",
+            // }}
+            >
+              <FontAwesome
+                style={{ textAlign: "center", marginBottom: 4 }}
+                name="square"
+                size={24}
+                color="white"
+              />
+            </View>
+            <Text style={{ color: "#ebe6bf" }}>Vacant</Text>
+          </View>
+          <View
+            style={{
+              flexDirection: "column",
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            <FontAwesome
+              style={{ textAlign: "center", marginBottom: 4 }}
+              name="square"
+              size={24}
+              color="gray"
+            />
+            <Text style={{ color: "#ebe6bf" }}>Booked</Text>
+          </View>
         </View>
-        <View
+        {/* <Pressable
+          onPress={pay}
           style={{
-            flexDirection: "column",
-            justifyContent: "center",
-            alignItems: "center",
+            marginTop: 300,
+            backgroundColor: "#e0e0e0",
+            padding: 10,
+            flexDirection: "row",
+            justifyContent: "space-between",
           }}
         >
-          <FontAwesome
-            style={{ textAlign: "center", marginBottom: 4 }}
-            name="square"
-            size={24}
-            color="gray"
-          />
-          <Text>Booked</Text>
-        </View>
+          <Text>HEllo</Text>
+          <Text>pay 100</Text>
+        </Pressable> */}
+      </ScrollView>
+      <View style={{ backgroundColor: "#0a0b0f" }}>
+        {selectedSeats.length > 0 ? (
+          <Pressable
+            style={{
+              backgroundColor: "#FEBE10",
+              padding: 20,
+              flexDirection: "row",
+              alignItems: "center",
+              marginHorizontal: 10,
+              marginBottom: 10,
+              borderRadius: 10,
+              justifyContent: "space-between",
+            }}
+          >
+            <Text style={{ fontSize: 15, fontWeight: "500" }}>
+              {selectedSeats.length} seat's selected {result}
+            </Text>
+            <Pressable onPress={pay}>
+              <Text style={{ fontSize: 15, fontWeight: "500" }}>Proceed</Text>
+            </Pressable>
+          </Pressable>
+        ) : (
+          <Pressable style={{ backgroundColor: "#36454F", padding: 20 }}>
+            <Text style={{ textAlign: "center" }}>0 SEATS SELECTED</Text>
+          </Pressable>
+        )}
       </View>
-      <Pressable
-        onPress={pay}
-        style={{
-          marginTop: 300,
-          backgroundColor: "#e0e0e0",
-          padding: 10,
-          flexDirection: "row",
-          justifyContent: "space-between",
-        }}
-      >
-        <Text>HEllo</Text>
-        <Text>pay 100</Text>
-      </Pressable>
-    </View>
+    </>
   );
 };
 
