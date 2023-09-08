@@ -1,5 +1,10 @@
 # Theater
 
+
+https://github.com/Rajkumar-24/Theater/assets/76393763/08327395-3277-4839-8658-14d38d522b42
+
+
+
 ## Installation
 
 Follow these steps to set up the project:
